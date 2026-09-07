@@ -1,0 +1,42 @@
+# ===== 敏感信息（严禁上传）=====
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+config.json
+credentials.json
+secrets.*
+*.token
+api_key.txt
+apikey.txt
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# ===== 日志与临时文件 =====
+*.log
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# ===== 依赖与构建产物 =====
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
