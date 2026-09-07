@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>概念学习资料 · 大模型的上下文（Context）</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1f2933; --muted:#6b7280;
+    --accent:#7c3aed; --accent-soft:#f1eafe; --border:#e5e7eb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 72px}
+  header{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-radius:14px;padding:28px 30px;margin-bottom:24px}
+  header h1{margin:0 0 8px;font-size:26px}
+  header .sub{opacity:.92;font-size:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .card h2{margin:0 0 12px;font-size:19px;color:var(--accent);padding-bottom:8px;border-bottom:2px solid var(--accent-soft)}
+  .def{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:14px 18px;font-weight:600}
+  ul{margin:8px 0;padding-left:22px}
+  li{margin:6px 0}
+  .src a{color:var(--accent);text-decoration:none;word-break:break-all}
+  .src a:hover{text-decoration:underline}
+  .foot{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+  .quiz{background:#f0f9f4;border:1px solid #d3ecd9;border-radius:8px;padding:12px 16px}
+  .warnbox{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>大模型的上下文（Context）</h1>
+    <div class="sub">概念学习资料 · 由 concept-learning-material-generator Skill 生成并经人工核查</div>
+  </header>
+
+  <div class="card">
+    <h2>一、一句话定义</h2>
+    <div class="def">上下文（Context）是大模型在一次生成中能"看到"的全部输入信息，其总长度受"上下文窗口（Context Window）"的 token 上限约束。</div>
+  </div>
+
+  <div class="card">
+    <h2>二、个人解释</h2>
+    <p>大模型没有"长期记忆"。它每回答一次，都是把"当前能看到的全部文字"重新读一遍来作答——这段"当前能看到的全部文字"就是<strong>上下文</strong>。</p>
+    <p>上下文窗口，就是这段文字能装下的最大 token 数。它直接决定了模型"知道什么"：</p>
+    <ul>
+      <li>信息装不下 → 被截断，模型"遗忘"；</li>
+      <li>装太多无关内容 → 注意力被稀释，成本上升、质量下降。</li>
+    </ul>
+    <p>所以对 Agent 来说，<strong>上下文的质量与容量，往往比模型本身更决定表现</strong>。</p>
+  </div>
+
+  <div class="card">
+    <h2>三、核心机制或组成</h2>
+    <ul>
+      <li><strong>输入组成</strong>：系统提示（System Prompt）+ 对话历史 + 工具返回 + 检索到的资料等。</li>
+      <li><strong>Token 与上下文窗口</strong>：文本先被切成 token，窗口是 token 上限；中英文的 token 与字符换算不同。</li>
+      <li><strong>注意力机制（Attention）</strong>：模型在上下文中"选择性关注"相关 token，源自 Transformer（Vaswani et al., 2017）。</li>
+      <li><strong>上下文工程（Context Engineering）</strong>：主动设计"喂给模型什么信息"，如精简、排序、检索增强（RAG）、渐进式披露。</li>
+      <li><strong>记忆与遗忘</strong>：超出窗口的部分被截断，靠外置记忆或摘要来缓解。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>四、一个具体应用场景</h2>
+    <p><strong>客服 Agent 处理超长对话</strong>：用户断断续续聊了上百轮，早已超过窗口上限。若不处理，模型会"忘记"用户最开始的问题。</p>
+    <p>这时需要做"上下文工程"：只保留最近 N 轮对话 + 用检索把历史工单中与当前问题相关的片段拉进来，再喂给模型。这样既省 token，又能让模型"记住"关键信息。</p>
+  </div>
+
+  <div class="card">
+    <h2>五、易混淆点 / 使用边界</h2>
+    <div class="warnbox">
+      <ul>
+        <li><strong>"上下文" ≠ "上下文窗口"</strong>：前者是"内容"，后者是"容量上限"。</li>
+        <li><strong>上下文 ≠ 长期记忆</strong>：超出窗口即"遗忘"，长期记忆需要外置存储。</li>
+        <li><strong>上下文并非越多越好</strong>：无关信息会稀释注意力、增加延迟与成本——所以业界强调"上下文工程"而非盲目塞满。</li>
+        <li><strong>token ≠ 字数</strong>：1 个中文汉字通常约 1~2 个 token，英文单词约 1~2 个 token，不能简单按字符估算。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>六、自测问题</h2>
+    <div class="quiz">
+      <ol>
+        <li>上下文窗口的大小如何限制一个多轮 Agent 的任务？</li>
+        <li>"上下文工程"要解决的核心问题是什么？</li>
+        <li>为什么说"上下文越多不一定越好"？</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card src">
+    <h2>七、可核查的资料来源</h2>
+    <ul>
+      <li>Anthropic《Effective context engineering for AI agents》：<a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></li>
+      <li>Anthropic《Introducing Contextual Retrieval》：<a href="https://www.anthropic.com/news/contextual-retrieval">https://www.anthropic.com/news/contextual-retrieval</a></li>
+      <li>《Attention Is All You Need》（Transformer 原始论文）：<a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a></li>
+    </ul>
+  </div>
+
+  <div class="foot">生成工具：.workbuddy/skills/concept-learning-material-generator · 内容经人工阅读与核查</div>
+</div>
+</body>
+</html>
